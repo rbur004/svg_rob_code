@@ -1,0 +1,240 @@
+<html>
+<head>
+<title>Arc Test</title>
+<script>
+var xor = true;
+var ring_radius = 10;
+var ring_increment = 4;
+var colour_array = ["red", "orange", "green", "lime", "aqua", "blue", "Fuchsia", "purple", "black"];
+var xor_value = 0xAA;
+var bounding_circle = true;
+
+function polarToCartesianCoordinates(centerX, centerY, radius, angleInDegrees) {
+  var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
+
+  return {
+    x: centerX + (radius * Math.cos(angleInRadians)),
+    y: centerY + (radius * Math.sin(angleInRadians))
+  };
+}
+
+function describeSVGArc(center_x,center_y, inner_radius, outer_radius, startAngle, endAngle){
+  var inner_start = polarToCartesianCoordinates(center_x,center_y, inner_radius, endAngle);
+  var inner_end = polarToCartesianCoordinates(center_x,center_y, inner_radius, startAngle);
+  var outer_start = polarToCartesianCoordinates(center_x,center_y, outer_radius, endAngle);
+  var outer_end = polarToCartesianCoordinates(center_x,center_y, outer_radius, startAngle);
+
+  var arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
+
+  var d = [
+      "M", outer_start.x, outer_start.y, 
+      "A", outer_radius, outer_radius, 0, arcSweep, 0, outer_end.x, outer_end.y,
+      "L", inner_end.x, inner_end.y,
+      "A", inner_radius, inner_radius, 0, arcSweep, 1, inner_start.x, inner_start.y,
+      "L", outer_start.x, outer_start.y
+  ].join(" ");
+
+  return d;       
+}
+
+function drawCircleArc(center_x,center_y, inner_radius, outer_radius, start_angle, end_angle, colour) {
+  var svg_ = document.getElementById("thesvg");
+  var newPath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+
+  newPath.setAttribute("d", describeSVGArc(center_x,center_y, inner_radius, outer_radius, start_angle, end_angle)); //Set path's data
+  newPath.style.stroke = "#000000"; //Set stroke colour
+  newPath.style.fill = colour; //Set fill colour
+  newPath.style.strokeWidth = "0.25"; //Set stroke width
+  svg_.appendChild(newPath);
+}
+
+function drawCircleBit(center_x,center_y, ring, ring_width, bytes_in_ring, bit_index, colour) {
+  var radius = ring_width * ring;
+  var arc_angle = 360 / (bytes_in_ring * 9); //ring * ring_increment
+  var start_angle = arc_angle * bit_index ;
+  drawCircleArc(center_x,center_y, radius, radius + ring_width, start_angle, start_angle+arc_angle, colour)
+}
+
+function drawCircle(center_x, center_y, ring_width, stroke_width, colour) {
+  var svg_ = document.getElementById("thesvg");
+  var newCircle = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
+  newCircle.setAttribute("cx", center_x);
+  newCircle.setAttribute("cy", center_y);
+  newCircle.setAttribute("r", ring_width);
+  if(stroke_width == 0) {
+    newCircle.style.fill = colour; //Set fill colour
+    newCircle.style.stroke = colour; //Set stroke colour
+    newCircle.style.strokeWidth = "0.25"; //Set stroke width
+  } else {
+    newCircle.style.fill = "none"; //Set fill colour
+    newCircle.style.stroke = colour; //Set stroke colour
+    newCircle.style.strokeWidth = stroke_width; //Set stroke width
+  }
+  svg_.appendChild(newCircle);
+}
+
+function drawDoubleCircle(center_x, center_y, ring_width, colour) {
+  drawCircle(center_x, center_y, ring_width/2,     0,                colour);
+  drawCircle(center_x, center_y, ring_width * 0.7, ring_width * 0.15, colour);
+}
+
+function encode_string_to_bits(the_string) {
+  var array_of_bytes = [];
+  for(var i=0; i < the_string.length; i++) {
+    array_of_bytes[i] = the_string.charCodeAt(i) & 0xFF;
+  }
+  return array_of_bytes;
+}
+
+//calculate ring and byte in the ring where number of bytes in ring = ring + 1
+function ring_index(i, step_size) {
+  if(step_size == 0) {
+    return { ring: i, 
+             byte_in_ring: 0, 
+             bytes_in_this_ring: 1,
+             ring_total_capacity: i
+          };
+  }
+  var a_b = ring_increment/2.0;
+  var _ring = Math.ceil((-a_b + Math.sqrt(a_b*a_b - 4*a_b*(-i)))/(2*a_b));
+  var _num_in_ring = _ring * step_size; //Ring * step_size
+  var _rings_total_capacity = a_b*(_ring*_ring+_ring); //step_size/2 * (n2+n)
+  var _byte_in_ring = _num_in_ring - _rings_total_capacity + i - 1;
+  return { ring: _ring, 
+           byte_in_ring: _byte_in_ring, 
+           bytes_in_this_ring: _num_in_ring,
+           ring_total_capacity: _rings_total_capacity
+        };
+}
+
+function ring_index_log(i, base) {
+  if(base <= 1) {
+    return { ring: i, 
+             byte_in_ring: 0, 
+             bytes_in_this_ring: 1,
+             ring_total_capacity: i
+          };
+  }
+   //fudge factor for the .99999999 case we got with base 3.
+  var _ring = Math.floor( Math.log( (1 - (i-1)/base*(1-base) )) / Math.log(base) + 0.0000000001 ) + 1; 
+  var _num_in_ring = Math.pow(base, _ring);    //Each ring is power of the base.
+  var _rings_total_capacity = ((1-Math.pow(base,_ring))/(1-base))*base;
+  var _byte_in_ring = _num_in_ring - _rings_total_capacity + i - 1; 
+  return { ring: _ring, 
+           byte_in_ring: _byte_in_ring, 
+           bytes_in_this_ring: _num_in_ring,
+           ring_total_capacity: _rings_total_capacity
+        };
+}
+
+function render_a_byte(the_byte, ring, bytes_in_ring, byte_in_ring) {
+  var parity = 0;
+  for(var j=0; j < 8; j++) {
+    if((the_byte & 1) == 1) {
+      parity ^= 1;
+      drawCircleBit(center_x,center_y, ring, ring_radius, bytes_in_ring, byte_in_ring * 9 + j, colour_array[j]);
+    }
+    the_byte >>>= 1;
+  }
+  if(parity == 1 && ring != null) { drawCircleBit(center_x,center_y, ring, ring_radius, bytes_in_ring, byte_in_ring * 9 + 8, colour_array[8]); }
+}
+
+
+function render_bytes(array_of_bytes, log_scale, ring_increment) {
+  var ring;
+  for(var i = 0; i < array_of_bytes.length; i++ ) {
+    ring = log_scale ? ring_index_log(i+1, ring_increment) : ring_index(i+1, ring_increment);
+    //alert("Index " + i + " Ring " + (ring.ring) + " Byte  " + (ring.byte_in_ring) + " Ring Capacity " + ring.bytes_in_this_ring);
+    var v = array_of_bytes[i];  
+    if(xor) { v = v ^ xor_value; }  //every second bit in byte, to remove runs of 0's
+    render_a_byte(v, ring.ring, ring.bytes_in_this_ring, ring.byte_in_ring);
+  }
+  if( ring != null ) {
+     //Fill ring with xor value.
+    if(xor) {
+      for(var rb = ring.byte_in_ring + 1; rb < ring.bytes_in_this_ring; rb++ ) {
+        render_a_byte(xor_value, ring.ring, ring.bytes_in_this_ring, rb);
+      }
+    }
+    if(bounding_circle) {
+      drawCircle(center_x,center_y, ring_radius * (ring.ring + 1.2), ring_radius * 0.2, "black"); //bounding circle
+    }
+  }
+}
+
+function render_centre_byte(the_byte) {
+  var parity = 0;
+  for(var j=0; j < 8; j++) {
+    if((the_byte & 1) == 1) {
+      parity ^= 1;
+      drawCircleArc(center_x,center_y, 0, ring_radius, 360/9 * j, 360/9 * (j+1), colour_array[j]) ;
+    }
+    the_byte >>>= 1;
+  }
+  if(parity == 1) { drawCircleArc(center_x,center_y, 0, ring_radius, 360/9*8, 360, colour_array[8]); }
+}
+
+function parseInt_local(s) {
+  if(s.substring(0, 2) == "0b") { return parseInt(s.substring(2),2); } //0b doesn't work in my browser.
+  if(s.substring(0, 2) == "0a") { return s.substring(2,3).charCodeAt(0) & 0xFF; } //hack to indicate ascii
+  return parseInt(s); //assume int10, 0x or 0
+}
+
+function encode_text(the_form) {
+  var _svg = document.getElementById("thesvg");
+  while (_svg.lastChild) {
+      _svg.removeChild(_svg.lastChild);
+  }
+  if(the_form.center.value == "double_circle") { drawDoubleCircle(center_x,center_y,ring_radius,"black"); }
+  else if(the_form.center.value == "center_circle") { drawCircle(center_x,center_y, ring_radius, 0, "black"); }
+  else if(the_form.center.value == "center_byte") { render_centre_byte(parseInt_local(the_form.center_byte_text.value)); }
+  ring_increment = parseInt(the_form.step_size.value);
+  xor_value = parseInt_local(the_form.xor_text.value);
+  xor = the_form.xor.checked;
+  bounding_circle = the_form.bounding_circle.checked;
+  render_bytes(encode_string_to_bits(the_form.the_text.value), the_form.exponential.checked, ring_increment);
+}
+
+function init() {
+  //xor = false; //Xor with 0xAA (10101010) to remove long runs of 0's
+  ring_radius = 20;
+  center_x = 300;
+  center_y = 300;
+  colour_array = []; //forces black and white. Colour is useful for seeing bits, but B&W looks better
+}
+</script>
+</head>
+<body onload="init();">
+  <h1>Playing with ROB Codes</h1>
+  <form action="" onsubmit="encode_text(this);return false;">
+    <input type="text" width="128" name="the_text" value="Hello World">
+    <input type="checkbox" id="exponential" >Exponential
+    <select name="step_size">
+      <option value="0">0</option>
+      <option value="1">1</option>
+      <option value="2" selected>2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+    </select>
+    <input type="text" width="16" name="xor_text" value="0xAA">
+    <input type="checkbox" id="xor" checked="true">XOR
+    <br>
+    <input type="radio" name="center" value="no_center" > No Center
+    <input type="radio" name="center" value="center_circle" checked> Center Circle
+    <input type="radio" name="center" value="double_circle" checked> Double Circle
+    <input type="radio" name="center" value="center_byte"> Center Byte
+    <input type="text" width="16" name="center_byte_text" value="0xAA">
+    <br>
+    <input type="checkbox" id="bounding_circle" checked="true">Bounding Circle<br>
+    <input type="submit" id="submit" name="draw">
+  </form>
+  <div align="left">
+    <svg id="thesvg" width="600px" height="600px" >
+    </svg>
+  </div>
+</body>
+</head>
