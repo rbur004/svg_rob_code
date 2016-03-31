@@ -12,17 +12,19 @@ The Python code, was in turn, a reimplementation of the C version, ca 1985, whic
 Bytes are drawn in concentric rings,  either increasing each ring linearly, or exponentially. 
 
 ###Linear Case
+```
   For a step_size of 2, then there are 2 bytes in ring 1, 4 bytes in ring 2, 6 bytes in ring 3, 8 bytes in ring 4, ...
   The number of bytes in any ring r, is r * step_size
   The number of bytes that can be presented in r rings is step_size/2 * (r*r + r)
   To find the ring, from a byte's index i: Math.ceil((-step_size/2 + Math.sqrt(step_size/2*step_size/2 - 4*step_size/2*(-i)))/step_size);
-  
+```  
 ###Exponential case
+```
   For a base of 2, then there are 2 bytes in ring 1, 4 bytes in ring 2, 8 bytes in ring 3, 16 in ring 4, ...
   The number of bytes in any ring r, is Math.pow(base, r)
   The number of bytes that can be presented in r rings is ((1-Math.pow(base,r))/(1-base))*base
   To find the ring r, from a byte's index i: Math.floor( Math.log( (1 - (i-1)/base*(1-base) )) / Math.log(base) ) + 1
-
+```
 ##Reducing White Space
 XOR and other encodings have been used to improved to visual appearance, by reducing large areas of white space, especially when there are partially filled rings. This further complicates decoding, unless the XOR byte(s), or other encoding is known. 
 
