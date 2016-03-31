@@ -46,6 +46,7 @@ function drawCircleArc(center_x, center_y, inner_radius, outer_radius, start_ang
   newPath.style.stroke = colour; //Set stroke colour
   newPath.style.fill = colour; //Set fill colour
   newPath.style.strokeWidth = "0.25"; //Set stroke width
+  
   svg_.appendChild(newPath);
 }
 
@@ -210,7 +211,8 @@ function encode_text(the_form) {
   ring_increment = parseInt(the_form.step_size.value);
   xor_value = parseInt_local(the_form.xor_text.value);
   xor = the_form.xor.checked;
-  colour_array =  the_form.colour.checked ? ["red", "orange", "green", "lime", "aqua", "blue", "Fuchsia", "purple", "black"] : []; 
+  colour_array =  the_form.colour.checked ? ["red", "orange", "green", "lime", "aqua", "blue", "Fuchsia", "purple", "black"] : 
+                                            ["black", "black", "black", "black", "black", "black", "black", "black", "black"]; 
   unrolled = the_form.unroll.checked
   bounding_circle = the_form.bounding_circle.checked && !unrolled;
   if(!unrolled) {
@@ -256,7 +258,7 @@ function init() {
     <input type="text" width="16" name="center_byte_text" value="0xAA">
     <br>
     <input type="checkbox" id="bounding_circle" checked="true">Bounding Circle
-    <input type="checkbox" id="colour" checked="true">Colour
+    <input type="checkbox" id="colour">Colour
     <input type="checkbox" id="unroll">Unroll    
     <br>
     <input type="submit" id="submit" name="draw">
