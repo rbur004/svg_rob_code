@@ -3,9 +3,9 @@ Implementation of Rings of Bytes Code generator in SVG, embedded in an HTML page
 
 Reimplements the earlier Python code, that produced a postscript file as output (ca the summer of 2013/14), and based on the target_library.ps and cardTemplate.ps from Diego Lopez de Iping TripCode generator (Diego's code was in turn, based on Jeremy Henty's code). 
 
-The Python code, was in turn, a reimplementation of the C version, ca 1985, which leveraged even earlier code for drawing bytes (8 bit, plus 1 parity bit) on concentric circles, to help students visualise how data is stored on disks. Many of the disk visualisations where visually attractive, reminiscent of scifi art, and so was born the first RoB Code generator.
+The Python code, was in turn, a reimplementation of the C version, ca 1985, which leveraged even earlier code for drawing bytes (8 bit, plus 1 parity bit) on concentric circles, to help students visualise how data is stored on disks (B&W Quickdraw on Lisa and 128M Macs). Many of the disk visualisations where visually attractive, reminiscent of scifi art, and so was born the first RoB Code generator (Yes, a pun. We had lots of Robs in Computer Science at that time). 
 
-The RoB codes are computer generated art. There is no known decoder. There is no key to orient the image for decoding, though it may be possible to deduce the bytes from the parity bits (odd parity).
+The RoB codes are computer generated art. There is no known decoder. There is no key to orient the image for decoding, though it may be possible to deduce the bytes from the parity bits (odd parity). Our house design was a RoB code, but for practical reasons, it got culled back to an octagon (not that an octagon is very practical :) (see: https://www.google.co.nz/maps/@-36.9906225,174.4870949,197m/data=!3m1!1e3) ). 
 
 Bytes are drawn in concentric rings, increasing the number of bytes in a ring, either linearly (ring * n), or exponentially ( Math.pow(ring,n); ). 
 
@@ -13,10 +13,7 @@ XOR and other encodings have been used to improved to visual appearance, by redu
 
 A central circle, half circle and ring, and a one byte pattern have all been used to enhance the visual appearance. Adding a thin ring, just beyond the last byte ring, helps frame the RoB code.
 
+The Unroll option draws the tracks as stacked rectangles, the inner track an top.
 
-
-
-
-
-
+Want to play: http://www.burrowes.org/svg_arc.html
 
