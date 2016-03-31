@@ -1,7 +1,7 @@
 # svg_rob_code
 Implementation of Rings of Bytes Code generator in SVG, embedded in an HTML page, with an in page form to modify the RoBCode parameters. 
 
-The RoBCodes are computer generated art. There is no known decoder. There is no key to orient the image for decoding, though it may be possible to deduce the bytes from the parity bits (odd parity). Our original house design was a RoBCode, but for practical reasons, it got culled back to an octagon (not that an octagon is very practical :) (see: https://www.google.co.nz/maps/@-36.9906225,174.4870949,197m/data=!3m1!1e3) ). 
+The RoBCodes are computer generated art. There is no known decoder. There is no key to orient the image for decoding, though it may be possible to deduce the bytes from the parity bits (odd parity). Our original house design was a RoBCode, but for practical reasons, it got culled back to an octagon (not that an octagon is very practical :) (see: https://www.google.co.nz/maps/@-36.9906225,174.4870949,197m/data=!3m1!1e3). 
 
 Want to play: http://www.burrowes.org/svg_arc.html
 
