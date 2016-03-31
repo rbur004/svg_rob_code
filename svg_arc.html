@@ -3,7 +3,7 @@
 <title>Arc Test</title>
 <script>
 var xor = true;
-var ring_radius = 10;
+var ring_width = 10;
 var ring_increment = 4;
 var colour_array = [];
 var xor_value = 0xAA;
@@ -146,20 +146,20 @@ function ring_index_log(i, base) {
         };
 }
 
-function render_a_byte(the_byte, ring, bytes_in_ring, byte_in_ring) {
+function render_a_byte(the_byte, ring, ring_width, bytes_in_ring, byte_in_ring) {
   var parity = 0;
   for(var j=0; j < 8; j++) {
     if((the_byte & 1) == 1) {
       parity ^= 1;
-      if(unrolled) { drawRectBit(0, 0, ring, ring_radius, bytes_in_ring, byte_in_ring * 9 + j, colour_array[j]); }
-      else { drawCircleBit(center_x, center_y, ring, ring_radius, bytes_in_ring, byte_in_ring * 9 + j, colour_array[j]); }
-    } else if(unrolled) { drawRectBit(0, 0, ring, ring_radius, bytes_in_ring, byte_in_ring * 9 + j, "white"); }
+      if(unrolled) { drawRectBit(0, 0, ring, ring_width, bytes_in_ring, byte_in_ring * 9 + j, colour_array[j]); }
+      else { drawCircleBit(center_x, center_y, ring, ring_width, bytes_in_ring, byte_in_ring * 9 + j, colour_array[j]); }
+    } else if(unrolled) { drawRectBit(0, 0, ring, ring_width, bytes_in_ring, byte_in_ring * 9 + j, "white"); }
     the_byte >>>= 1;
   }
   if(parity == 1 && ring != null) { 
-    if(unrolled) { drawRectBit(0, 0, ring, ring_radius, bytes_in_ring, byte_in_ring * 9 + 8, colour_array[8]); }
-    else { drawCircleBit(center_x, center_y, ring, ring_radius, bytes_in_ring, byte_in_ring * 9 + 8, colour_array[8]); }
-  } else if(unrolled) { drawRectBit(0, 0, ring, ring_radius, bytes_in_ring, byte_in_ring * 9 + j, "white"); }
+    if(unrolled) { drawRectBit(0, 0, ring, ring_width, bytes_in_ring, byte_in_ring * 9 + 8, colour_array[8]); }
+    else { drawCircleBit(center_x, center_y, ring, ring_width, bytes_in_ring, byte_in_ring * 9 + 8, colour_array[8]); }
+  } else if(unrolled) { drawRectBit(0, 0, ring, ring_width, bytes_in_ring, byte_in_ring * 9 + j, "white"); }
 }
 
 
@@ -170,17 +170,17 @@ function render_bytes(array_of_bytes, log_scale, ring_increment) {
     //alert("Index " + i + " Ring " + (ring.ring) + " Byte  " + (ring.byte_in_ring) + " Ring Capacity " + ring.bytes_in_this_ring);
     var v = array_of_bytes[i];  
     if(xor) { v = v ^ xor_value; }  //every second bit in byte, to remove runs of 0's
-    render_a_byte(v, ring.ring, ring.bytes_in_this_ring, ring.byte_in_ring);
+    render_a_byte(v, ring.ring, ring_width, ring.bytes_in_this_ring, ring.byte_in_ring);
   }
   if( ring != null ) {
      //Fill ring with xor value.
     if(xor) {
       for(var rb = ring.byte_in_ring + 1; rb < ring.bytes_in_this_ring; rb++ ) {
-        render_a_byte(xor_value, ring.ring, ring.bytes_in_this_ring, rb);
+        render_a_byte(xor_value, ring.ring, ring_width, ring.bytes_in_this_ring, rb);
       }
     }
     if(bounding_circle) {
-      drawCircle(center_x, center_y, ring_radius * (ring.ring + 1.2), ring_radius * 0.2, "black"); //bounding circle
+      drawCircle(center_x, center_y, ring_width * (ring.ring + 1.2), ring_width * 0.2, "black"); //bounding circle
     }
   }
 }
@@ -190,11 +190,11 @@ function render_centre_byte(the_byte) {
   for(var j=0; j < 8; j++) {
     if((the_byte & 1) == 1) {
       parity ^= 1;
-      drawCircleArc(center_x, center_y, 0, ring_radius, 360/9 * j, 360/9 * (j+1), colour_array[j]) ;
+      drawCircleArc(center_x, center_y, 0, ring_width, 360/9 * j, 360/9 * (j+1), colour_array[j]) ;
     }
     the_byte >>>= 1;
   }
-  if(parity == 1) { drawCircleArc(center_x, center_y, 0, ring_radius, 360/9*8, 360, colour_array[8]); }
+  if(parity == 1) { drawCircleArc(center_x, center_y, 0, ring_width, 360/9*8, 360, colour_array[8]); }
 }
 
 function parseInt_local(s) {
@@ -208,6 +208,9 @@ function encode_text(the_form) {
   while (_svg.lastChild) {
       _svg.removeChild(_svg.lastChild);
   }
+  ring_width = parseInt(the_form.ring_width.value);
+  center_x = parseInt(the_form.center_x.value);
+  center_y = parseInt(the_form.center_y.value);
   ring_increment = parseInt(the_form.step_size.value);
   xor_value = parseInt_local(the_form.xor_text.value);
   xor = the_form.xor.checked;
@@ -216,8 +219,8 @@ function encode_text(the_form) {
   unrolled = the_form.unroll.checked
   bounding_circle = the_form.bounding_circle.checked && !unrolled;
   if(!unrolled) {
-    if(the_form.center.value == "double_circle") { drawDoubleCircle(center_x, center_y,ring_radius,"black"); }
-    else if(the_form.center.value == "center_circle") { drawCircle(center_x, center_y, ring_radius, 0, "black"); }
+    if(the_form.center.value == "double_circle") { drawDoubleCircle(center_x, center_y,ring_width,"black"); }
+    else if(the_form.center.value == "center_circle") { drawCircle(center_x, center_y, ring_width, 0, "black"); }
     else if(the_form.center.value == "center_byte") { render_centre_byte(parseInt_local(the_form.center_byte_text.value)); }
   }
   
@@ -225,17 +228,15 @@ function encode_text(the_form) {
 }
 
 function init() {
-  //xor = false; //Xor with 0xAA (10101010) to remove long runs of 0's
-  ring_radius = 20;
-  center_x = 300;
-  center_y = 300;
+  var the_form = document.getElementById("the_form");
+  encode_text(the_form);
 }
 </script>
 </head>
 <body onload="init();">
   <h1>Playing with RoBCodes</h1>
   <div align="right">See: <a href="https://github.com/rbur004/svg_rob_code">https://github.com/rbur004/svg_rob_code</a></div>
-  <form action="" onsubmit="encode_text(this);return false;">
+  <form id="the_form" action="" onsubmit="encode_text(this);return false;">
     <input type="text" width="128" name="the_text" value="Hello World">
     <input type="checkbox" id="exponential" >Exponential
     <select name="step_size">
@@ -248,9 +249,13 @@ function init() {
       <option value="6">6</option>
       <option value="7">7</option>
       <option value="8">8</option>
-    </select>
+    </select> Step Size (or Base)
     <input type="text" width="16" name="xor_text" value="0xAA">
     <input type="checkbox" id="xor" checked="true">XOR
+    <br>
+    Center X <input type="text" width="8" name="center_x" value="250">
+    Y <input type="text" width="8" name="center_y" value="250">
+    Ring Width<input type="text" width="8" name="ring_width" value="20">
     <br>
     <input type="radio" name="center" value="no_center" > No Center
     <input type="radio" name="center" value="center_circle" checked> Center Circle
@@ -261,11 +266,11 @@ function init() {
     <input type="checkbox" id="bounding_circle" checked="true">Bounding Circle
     <input type="checkbox" id="colour">Colour
     <input type="checkbox" id="unroll">Unroll    
-    <br>
+    <br><br>
     <input type="submit" id="submit" name="draw">
   </form>
   <div align="left">
-    <svg id="thesvg" width="100%" height="600px" >
+    <svg id="thesvg" width="100%" height="100%" >
     </svg>
   </div>
 </body>
