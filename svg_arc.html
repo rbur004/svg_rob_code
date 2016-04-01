@@ -9,6 +9,7 @@ var colour_array = [];
 var xor_value = 0xAA;
 var bounding_circle = true;
 var unrolled = false;
+var start_ring = 1;
 
 function polarToCartesianCoordinates(centerX, centerY, radius, angleInDegrees) {
   var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
@@ -109,6 +110,13 @@ function encode_string_to_bits(the_string) {
   return array_of_bytes;
 }
 
+function first_byte_for_ring(ring, step_size, log) { //base = step_size for log
+  if(ring <= 0) return 0;
+  ring -= 1; //As we need to calculate the capacity upto this ring.
+  if(log) { return ((1-Math.pow(step_size,ring))/(1-step_size))*step_size + 1; }
+  return step_size/2.0 * (ring*ring+ring) + 1;
+}
+
 //calculate ring and byte in the ring where number of bytes in ring = ring + 1
 function ring_index(i, step_size) {
   if(step_size == 0) {
@@ -167,10 +175,10 @@ function render_a_byte(the_byte, ring, ring_width, bytes_in_ring, byte_in_ring) 
 }
 
 
-function render_bytes(array_of_bytes, log_scale, ring_increment) {
+function render_bytes(array_of_bytes, log_scale, ring_increment, first_byte_offset) {
   var ring;
   for(var i = 0; i < array_of_bytes.length; i++ ) {
-    ring = log_scale ? ring_index_log(i+1, ring_increment) : ring_index(i+1, ring_increment);
+    ring = log_scale ? ring_index_log(i+first_byte_offset, ring_increment) : ring_index(i+first_byte_offset, ring_increment);
     //alert("Index " + i + " Ring " + (ring.ring) + " Byte  " + (ring.byte_in_ring) + " Ring Capacity " + ring.bytes_in_this_ring);
     var v = array_of_bytes[i];  
     if(xor) { v = v ^ xor_value; }  //every second bit in byte, to remove runs of 0's
@@ -212,10 +220,13 @@ function encode_text(the_form) {
   while (_svg.lastChild) {
       _svg.removeChild(_svg.lastChild);
   }
+  start_ring = parseInt(the_form.start_ring.value);
+  ring_increment = parseInt(the_form.step_size.value);
+  first_byte_offset = first_byte_for_ring(start_ring, ring_increment, the_form.exponential.checked);
+  
   ring_width = parseInt(the_form.ring_width.value);
   center_x = parseInt(the_form.center_x.value);
   center_y = parseInt(the_form.center_y.value);
-  ring_increment = parseInt(the_form.step_size.value);
   xor_value = parseInt_local(the_form.xor_text.value);
   xor = the_form.xor.checked;
   colour_array =  the_form.colour.checked ? ["red", "orange", "green", "lime", "aqua", "blue", "Fuchsia", "purple", "black"] : 
@@ -229,7 +240,7 @@ function encode_text(the_form) {
     else if(the_form.center.value == "center_byte") { render_centre_byte(parseInt_local(the_form.center_byte_text.value)); }
   }
   
-  render_bytes(encode_string_to_bits(the_form.the_text.value), the_form.exponential.checked, ring_increment);
+  render_bytes(encode_string_to_bits(the_form.the_text.value), the_form.exponential.checked, ring_increment, first_byte_offset);
 }
 
 function init() {
@@ -254,7 +265,9 @@ function init() {
       <option value="6">6</option>
       <option value="7">7</option>
       <option value="8">8</option>
-    </select> Step Size (or Base)<br>
+    </select> Step Size (or Base)
+    start at Ring <input type="text" size="5" name="start_ring" value="1">
+    <br>
     <input type="text" width="16" name="xor_text" value="0xAA">
     <input type="checkbox" id="xor" checked="true">XOR (0b for binary, 0a for a Character)
     <br>
