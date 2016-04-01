@@ -225,7 +225,7 @@ function encode_text(the_form) {
   if(!unrolled) {
     if(the_form.center.value == "double_circle") { drawDoubleCircle(center_x, center_y,ring_width,"black"); }
     else if(the_form.center.value == "center_circle") { drawCircle(center_x, center_y, ring_width, 0, "black"); }
-    else if(the_form.center.value == "ring") { drawRing(center_x, center_y, ring_width, ring_width*0.2, "black"); }
+    else if(the_form.center.value == "ring") { drawRing(center_x, center_y, ring_width * 0.9, ring_width*0.2, "black"); }
     else if(the_form.center.value == "center_byte") { render_centre_byte(parseInt_local(the_form.center_byte_text.value)); }
   }
   
@@ -242,7 +242,7 @@ function init() {
   <h1>Playing with RoBCodes</h1>
   <div align="right">See: <a href="https://github.com/rbur004/svg_rob_code">https://github.com/rbur004/svg_rob_code</a></div>
   <form id="the_form" action="" onsubmit="encode_text(this);return false;">
-    <input type="text" width="128" name="the_text" value="Hello World">
+    <input type="text" size="128" name="the_text" value="Hello World"><br>
     <input type="checkbox" id="exponential" >Exponential
     <select name="step_size">
       <option value="0">0</option>
@@ -254,26 +254,26 @@ function init() {
       <option value="6">6</option>
       <option value="7">7</option>
       <option value="8">8</option>
-    </select> Step Size (or Base)
+    </select> Step Size (or Base)<br>
     <input type="text" width="16" name="xor_text" value="0xAA">
-    <input type="checkbox" id="xor" checked="true">XOR
+    <input type="checkbox" id="xor" checked="true">XOR (0b for binary, 0a for a Character)
     <br>
-    Center X <input type="text" width="8" name="center_x" value="250">
-    Y <input type="text" width="8" name="center_y" value="250">
-    Ring Width<input type="text" width="8" name="ring_width" value="20">
+    Center X <input type="text" size="5" name="center_x" value="250">
+    Y <input type="text" size="5" name="center_y" value="250">
+    Ring Width<input type="text" size="3" name="ring_width" value="20">
     <br>
     <input type="radio" name="center" value="no_center" checked> No Center
     <input type="radio" name="center" value="center_circle" > Solid
     <input type="radio" name="center" value="ring" > Ring
     <input type="radio" name="center" value="double_circle" > Circle with Ring
     <input type="radio" name="center" value="center_byte"> Center Byte
-    <input type="text" width="16" name="center_byte_text" value="0xAA">
+    <input type="text" size="12" name="center_byte_text" value="0xAA">
     <br>
     <input type="checkbox" id="bounding_circle" checked="true">Bounding Circle
     <input type="checkbox" id="colour">Colour
     <input type="checkbox" id="unroll">Unroll    
     <br><br>
-    <input type="submit" id="submit" name="draw">
+    <input type="submit" id="submit" name="draw" onClick="this.blur();">
   </form>
   <div align="left">
     <svg id="thesvg" width="100%" height="100%" >
