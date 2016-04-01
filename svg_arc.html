@@ -112,6 +112,7 @@ function encode_string_to_bits(the_string) {
 
 function first_byte_for_ring(ring, step_size, log) { //base = step_size for log
   if(ring <= 0) return 0;
+  if(step_size == 0) { return ring; }
   ring -= 1; //As we need to calculate the capacity upto this ring.
   if(log) { return ((1-Math.pow(step_size,ring))/(1-step_size))*step_size + 1; }
   return step_size/2.0 * (ring*ring+ring) + 1;
