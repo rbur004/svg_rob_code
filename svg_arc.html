@@ -10,6 +10,10 @@ var xor_value = 0xAA;
 var bounding_circle = true;
 var unrolled = false;
 var start_ring = 1;
+var counter_clockwise = false;
+var bit_order = 'lsb';
+var which_parity = 'even';
+var bits_per_byte = 9;
 
 function polarToCartesianCoordinates(centerX, centerY, radius, angleInDegrees) {
   var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
@@ -42,7 +46,12 @@ function describeSVGArc(center_x, center_y, inner_radius, outer_radius, startAng
 function drawCircleArc(center_x, center_y, inner_radius, outer_radius, start_angle, end_angle, colour) {
   var svg_ = document.getElementById("thesvg");
   var newPath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-
+  
+  if(counter_clockwise) {
+    t = 360 - start_angle;
+    start_angle = 360 - end_angle;
+    end_angle = t;
+  }
   newPath.setAttribute("d", describeSVGArc(center_x, center_y, inner_radius, outer_radius, start_angle, end_angle)); //Set path's data
   newPath.style.stroke = colour; //Set stroke colour
   newPath.style.fill = colour; //Set fill colour
@@ -53,7 +62,7 @@ function drawCircleArc(center_x, center_y, inner_radius, outer_radius, start_ang
 
 function drawCircleBit(center_x, center_y, ring, ring_width, bytes_in_ring, bit_index, colour) {
   var radius = ring_width * ring;
-  var arc_angle = 360 / (bytes_in_ring * 9); //ring * ring_increment
+  var arc_angle = 360 / (bytes_in_ring * bits_per_byte); //ring * ring_increment
   var start_angle = arc_angle * bit_index ;
   drawCircleArc(center_x, center_y, radius, radius + ring_width, start_angle, start_angle+arc_angle, colour)
 }
@@ -160,19 +169,21 @@ function ring_index_log(i, base) {
 }
 
 function render_a_byte(the_byte, ring, ring_width, bytes_in_ring, byte_in_ring) {
-  var parity = 0;
+  var parity = which_parity == 'even' ? 0 : 1; //even or odd, ignore none
   for(var j=0; j < 8; j++) {
     if((the_byte & 1) == 1) {
       parity ^= 1;
-      if(unrolled) { drawRectBit(0, 0, ring, ring_width, bytes_in_ring, byte_in_ring * 9 + j, colour_array[j]); }
-      else { drawCircleBit(center_x, center_y, ring, ring_width, bytes_in_ring, byte_in_ring * 9 + j, colour_array[j]); }
-    } else if(unrolled) { drawRectBit(0, 0, ring, ring_width, bytes_in_ring, byte_in_ring * 9 + j, "white"); }
+      if(unrolled) { drawRectBit(0, 0, ring, ring_width, bytes_in_ring, byte_in_ring * bits_per_byte + j, colour_array[j]); }
+      else { drawCircleBit(center_x, center_y, ring, ring_width, bytes_in_ring, byte_in_ring * bits_per_byte + j, colour_array[j]); }
+    } else if(unrolled) { drawRectBit(0, 0, ring, ring_width, bytes_in_ring, byte_in_ring * bits_per_byte + j, "white"); }
     the_byte >>>= 1;
   }
-  if(parity == 1 && ring != null) { 
-    if(unrolled) { drawRectBit(0, 0, ring, ring_width, bytes_in_ring, byte_in_ring * 9 + 8, colour_array[8]); }
-    else { drawCircleBit(center_x, center_y, ring, ring_width, bytes_in_ring, byte_in_ring * 9 + 8, colour_array[8]); }
-  } else if(unrolled) { drawRectBit(0, 0, ring, ring_width, bytes_in_ring, byte_in_ring * 9 + j, "white"); }
+  if(which_parity != "none") { 
+    if(parity == 1 && ring != null) { 
+      if(unrolled) { drawRectBit(0, 0, ring, ring_width, bytes_in_ring, byte_in_ring * bits_per_byte + 8, colour_array[8]); }
+      else { drawCircleBit(center_x, center_y, ring, ring_width, bytes_in_ring, byte_in_ring * bits_per_byte + 8, colour_array[8]); }
+    } else if(unrolled) { drawRectBit(0, 0, ring, ring_width, bytes_in_ring, byte_in_ring * bits_per_byte + j, "white"); }
+  }
 }
 
 
@@ -203,11 +214,11 @@ function render_centre_byte(the_byte) {
   for(var j=0; j < 8; j++) {
     if((the_byte & 1) == 1) {
       parity ^= 1;
-      drawCircleArc(center_x, center_y, 0, ring_width, 360/9 * j, 360/9 * (j+1), colour_array[j]) ;
+      drawCircleArc(center_x, center_y, 0, ring_width, 360/bits_per_byte * j, 360/bits_per_byte * (j+1), colour_array[j]) ;
     }
     the_byte >>>= 1;
   }
-  if(parity == 1) { drawCircleArc(center_x, center_y, 0, ring_width, 360/9*8, 360, colour_array[8]); }
+  if(parity == 1) { drawCircleArc(center_x, center_y, 0, ring_width, 360/bits_per_byte*8, 360, colour_array[8]); }
 }
 
 function parseInt_local(s) {
@@ -224,6 +235,10 @@ function encode_text(the_form) {
   start_ring = parseInt(the_form.start_ring.value);
   ring_increment = parseInt(the_form.step_size.value);
   first_byte_offset = first_byte_for_ring(start_ring, ring_increment, the_form.exponential.checked);
+  counter_clockwise = the_form.counter_clockwise.checked
+  bit_order = the_form.bit_order.value;
+  which_parity = the_form.parity.value;
+  bits_per_byte = which_parity == "none" ? 8 : 9;
   
   ring_width = parseInt(the_form.ring_width.value);
   center_x = parseInt(the_form.center_x.value);
@@ -283,9 +298,16 @@ function init() {
     <input type="radio" name="center" value="center_byte"> Center Byte
     <input type="text" size="12" name="center_byte_text" value="0xAA">
     <br>
+    <input type="radio" name="bit_order" value="lsb" checked> LSB
+    <input type="radio" name="bit_order" value="msb" disabled> MSB&nbsp;&nbsp;
+    <input type="radio" name="parity" value="even" checked> Even Parity
+    <input type="radio" name="parity" value="odd"> Odd Parity
+    <input type="radio" name="parity" value="none"> No Parity
+    <br>
+    <input type="checkbox" id="counter_clockwise">Counter Clockwise
     <input type="checkbox" id="bounding_circle" checked="true">Bounding Circle
     <input type="checkbox" id="colour">Colour
-    <input type="checkbox" id="unroll">Unroll    
+    <input type="checkbox" id="unroll">Unroll
     <br><br>
     <input type="submit" id="submit" name="draw" onClick="this.blur();">
   </form>
