@@ -5,7 +5,7 @@ The RoBCodes are computer generated art. There is no known decoder. There is no 
 ##History
 Uses TripCode postscript library files (target_library.ps and cardTemplate7.ps by Diego Lopez de Ipina and Jeremy Henty) to draw circles and arcs. This generates a postscript file, with an anti-clockwise RoBCode, with 0 point on the right, at 90 degrees. 
 
-The Python code, was a reimplementation, from memory, of the C version, ca 1985, which leveraged even earlier code for drawing bytes (8 bit, plus 1 parity bit) on concentric circles, to help students visualise how data is stored on disks (B&W Quickdraw on Lisa and 128M Macs). Many of the disk visualisations where visually attractive, reminiscent of scifi art, and so was born the first RoBCode generator. 
+The Python code, was a reimplementation (Summer 2013/14), from memory, of the C version, ca 1985, which leveraged even earlier code for drawing bytes (8 bit, plus 1 parity bit) on concentric circles, to help students visualise how data is stored on disks (B&W Quickdraw on Lisa and 128M Macs). Many of the disk visualisations where visually attractive, reminiscent of scifi art, and so was born the first RoBCode generator. 
 
 #Calculating where the Bytes go
 Bytes are drawn in concentric rings,  either increasing each ring linearly, or exponentially. 
