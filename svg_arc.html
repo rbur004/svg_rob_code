@@ -170,13 +170,23 @@ function ring_index_log(i, base) {
 
 function render_a_byte(the_byte, ring, ring_width, bytes_in_ring, byte_in_ring) {
   var parity = which_parity == 'even' ? 0 : 1; //even or odd, ignore none
+  var mask ;
+  var lsb;
+  if(bit_order == 'lsb') {
+    mask = 1;
+    lsb = true;
+  } else {
+    mask = 0x80;
+    lsb = false;
+  }
+  
   for(var j=0; j < 8; j++) {
-    if((the_byte & 1) == 1) {
+    if((the_byte & mask) == mask) {
       parity ^= 1;
       if(unrolled) { drawRectBit(0, 0, ring, ring_width, bytes_in_ring, byte_in_ring * bits_per_byte + j, colour_array[j]); }
       else { drawCircleBit(center_x, center_y, ring, ring_width, bytes_in_ring, byte_in_ring * bits_per_byte + j, colour_array[j]); }
     } else if(unrolled) { drawRectBit(0, 0, ring, ring_width, bytes_in_ring, byte_in_ring * bits_per_byte + j, "white"); }
-    the_byte >>>= 1;
+    if(lsb) the_byte >>>= 1; else mask >>>= 1;
   }
   if(which_parity != "none") { 
     if(parity == 1 && ring != null) { 
@@ -210,13 +220,23 @@ function render_bytes(array_of_bytes, log_scale, ring_increment, first_byte_offs
 }
 
 function render_centre_byte(the_byte) {
-  var parity = 0;
+  var parity = which_parity == 'even' ? 0 : 1; //even or odd, ignore none
+  var mask ;
+  var lsb;
+  if(bit_order == 'lsb') {
+    mask = 1;
+    lsb = true;
+  } else {
+    mask = 0x80;
+    lsb = false;
+  }
+
   for(var j=0; j < 8; j++) {
-    if((the_byte & 1) == 1) {
+    if((the_byte & mask) == mask) {
       parity ^= 1;
       drawCircleArc(center_x, center_y, 0, ring_width, 360/bits_per_byte * j, 360/bits_per_byte * (j+1), colour_array[j]) ;
     }
-    the_byte >>>= 1;
+    if(lsb) the_byte >>>= 1; else mask >>>= 1;
   }
   if(parity == 1) { drawCircleArc(center_x, center_y, 0, ring_width, 360/bits_per_byte*8, 360, colour_array[8]); }
 }
@@ -285,7 +305,7 @@ function init() {
     start at Ring <input type="text" size="5" name="start_ring" value="1">
     <br>
     <input type="text" width="16" name="xor_text" value="0xAA">
-    <input type="checkbox" id="xor" checked="true">XOR (0b for binary, 0a for a Character)
+    <input type="checkbox" id="xor" checked="true">XOR (0b for binary, 0a for a Character, 0x for Hex)
     <br>
     Center X <input type="text" size="5" name="center_x" value="250">
     Y <input type="text" size="5" name="center_y" value="250">
@@ -299,7 +319,7 @@ function init() {
     <input type="text" size="12" name="center_byte_text" value="0xAA">
     <br>
     <input type="radio" name="bit_order" value="lsb" checked> LSB
-    <input type="radio" name="bit_order" value="msb" disabled> MSB&nbsp;&nbsp;
+    <input type="radio" name="bit_order" value="msb"> MSB&nbsp;&nbsp;
     <input type="radio" name="parity" value="even" checked> Even Parity
     <input type="radio" name="parity" value="odd"> Odd Parity
     <input type="radio" name="parity" value="none"> No Parity
