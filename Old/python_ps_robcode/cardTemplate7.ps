@@ -1,0 +1,33 @@
+
+% Goto -> x y
+1 index 1 index % x y -> x y x y 
+radius 1.3 mul sub
+moveto % x y x y -> x y
+
+gsave
+0 setgray
+/Times-BoldItalic findfont
+fontSize scalefont
+setfont
+
+% Calculate the width of the string to be printed out = labelCard + identifier
+labelCard stringwidth
+pop
+/widthString {2 div -1 mul} def
+widthString 0 rmoveto % To center the string to be printed out
+
+labelCard show % Print labelCard
+
+grestore 
+newpath
+
+
+showpage
+
+
+
+
+
+
+
+

@@ -1,0 +1,125 @@
+%!
+% <HEAD> 
+% <FILE> target_library.ps
+% <AUTHOR> Diego Lopez de Ipina 
+% <ORIGINAL> Jeremy Henty 
+% </HEAD> 
+% 
+
+% 
+% This file is a library of PostScript procedures for drawing 
+% targets.  It is intended for use by utility programs/scripts.  
+% 
+
+% 
+%   code: 
+%   an array of 0s and 1s, defining the sectors of the code ring.  
+%     0 = white sector 
+%     1 = black sector 
+% 
+%   radius: the radius of the target bullseye 
+% 
+
+% conversion from mm to pt 
+% mm -> pt 
+/mm { 25.4 div 72 mul } def 
+
+% draw a circle 
+% r x y -> - 
+/circle { 3 -1 roll 0 360 arc fill } def 
+
+% draw a target at (x,y) with radius r and n rings 
+% x y r n -> x y 
+/target 
+{              %    x y    r    n 
+  1 index exch % -> x y    r    r n 
+  .5 add div   % -> x y    r step 
+  exch         % -> x y step    r 
+  0 3 1 roll  % -> x y gray step r 
+% Change here the gray scale value
+  { draw_ring } loop 
+
+  3 { pop } repeat % -> x y 
+} 
+def 
+
+/draw_ring 
+% x y gray step r -> x y 1-gray step r 
+{ 
+  dup 0 lt { exit } if % exit if r is negative 
+  2 index setgray
+  %.70 setgray 
+  dup 5 index 5 index circle   % draw a circle 
+
+  % reverse color 
+  3 -1 roll      % -> x y   step    r   gray 
+  1 exch neg add % -> x y   step    r 1-gray 
+  3 1 roll       % -> x y 1-gray step      r 
+
+  1 index neg add % decrement the radius 
+} 
+def 
+
+/draw_code 
+% x y r1 r2 code -> x y 
+{                         %           x y r1 r2     code 
+  dup length 360 exch div % ->        x y r1 r2     code del_th 
+  6 1 roll 0 exch         % -> del_th x y r1 r2 th1 code 
+
+  {                 %    del_th      x y r1 r2 th1 bit 
+    1 exch neg add  % -> del_th      x y r1 r2 th1 grey 
+    6 1 roll        % -> del_th grey x y r1 r2 th1 
+    dup 7 index add % -> del_th grey x y r1 r2 th1 th2 
+    newpath 
+    6 copy 3 -1 roll pop      arc 
+    6 copy 4 -1 roll pop exch arcn 
+    closepath 
+    7 -1 roll setgray fill % del_th x y r1 r2 th1 th2 
+    exch pop               % del_th x y r1 r2 th2 
+  }
+  forall % del_th x y r1 r2 th 
+
+  6 -1 roll 4 { pop } repeat % -> x y 
+}
+def
+
+% centre of an A4 page 
+/a4centre 
+% - -> x y 
+{              %    - 
+  210 mm 2 div % -> x 
+  297 mm 2 div % -> x y 
+}
+def
+
+% x y width -> 
+% draw a box
+/box {
+  2 index 2 index %x y width -> x y width x y
+  newpath
+  moveto % x y width x y -> x y width
+  0 1 index rlineto % x y width -> x y width
+  dup % x y width -> x y width width
+  0 rlineto % x y width width -> x y width
+  0 1 index -1 mul rlineto % x y width -> x y width
+  closepath
+  stroke
+  pop % x y width -> x y
+  pop % x y -> x
+  pop % x ->
+} def  
+
+
+% variable definitions
+/rings 2 def
+/black 0 def % Define black colour
+/white 1 def % Define white colour
+
+
+
+
+
+
+
+
+
