@@ -1,6 +1,6 @@
 #Python RoBCode Generator
 
-The RoBCodes are computer generated art. There is no known decoder. There is no key to orient the image for decoding, though it may be possible to deduce the bytes from the parity bits (odd parity). 
+The RoBCodes are computer generated art. There is no known decoder. There is no key to orient the image for decoding, though it may be possible to deduce the bytes from the parity bits (even parity). 
 
 ##History
 Uses TripCode postscript library files (target_library.ps and cardTemplate7.ps by Diego Lopez de Ipina and Jeremy Henty) to draw circles and arcs. This generates a postscript file, with an anti-clockwise RoBCode, with 0 point on the right, at 90 degrees. 
