@@ -3,7 +3,8 @@ Implementation of Rings of Bytes Code generator in SVG, embedded in an HTML page
 
 The RoBCodes are computer generated art. There is no known decoder. There is no key to orient the image for decoding, though it may be possible to deduce the bytes from the parity bits. Our original house design was a RoBCode, but for practical reasons, it got culled back to an octagon (not that an octagon is very practical :) (see: https://www.google.co.nz/maps/@-36.9906225,174.4870949,197m/data=!3m1!1e3). 
 
-Want to play: http://www.burrowes.org/svg_arc.html
+Want to play: http://www.burrowes.org/svg_arc.html 
+or http://www.burrowes.org/rob_code.html
 
 ##History
 Reimplements the earlier Python code, that produced a postscript file as output (ca the summer of 2013/14), and based on the target_library.ps and cardTemplate.ps from Diego Lopez de Iping TripCode generator (Diego's code was in turn, based on Jeremy Henty's code). 
