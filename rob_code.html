@@ -285,7 +285,7 @@ function encode_text(the_form) {
 
 function init() {
   var the_form = document.getElementById("the_form");
-  //encode_text(the_form);
+  encode_text(the_form);
 }
 </script>
 </head>
@@ -294,23 +294,25 @@ function init() {
   <div align="right">See: <a href="https://github.com/rbur004/svg_rob_code">https://github.com/rbur004/svg_rob_code</a></div>
   <form id="the_form" action="" onsubmit="encode_text(this);return false;">
     <textarea rows="5" cols="80" name="the_text">
-      If we shadows have offended,
-      Think but this, and all is mended,
-      That you have but slumber'd here
-      While these visions did appear.
-      And this weak and idle theme,
-      No more yielding but a dream,
-      Gentles, do not reprehend:
-      if you pardon, we will mend:
-      And, as I am an honest Puck,
-      If we have unearned luck
-      Now to 'scape the serpent's tongue,
-      We will make amends ere long;
-      Else the Puck a liar call;
-      So, good night unto you all.
-      Give me your hands, if we be friends,
-      And Robin shall restore amends.
-    </textarea><br>
+PUCK
+  If we shadows have offended,
+  Think but this, and all is mended,
+  That you have but slumber'd here
+  While these visions did appear.
+  And this weak and idle theme,
+  No more yielding but a dream,
+  Gentles, do not reprehend:
+  if you pardon, we will mend:
+  And, as I am an honest Puck,
+  If we have unearned luck
+  Now to 'scape the serpent's tongue,
+  We will make amends ere long;
+  Else the Puck a liar call;
+  So, good night unto you all.
+  Give me your hands, if we be friends,
+  And Robin shall restore amends.
+</textarea>
+<br>
     <input type="checkbox" id="exponential" >Exponential
     <select name="step_size">
       <option value="0">0</option>
@@ -340,8 +342,8 @@ function init() {
     <input type="radio" name="center" value="center_byte"> Center Byte
     <input type="text" size="12" name="center_byte_text" value="0xAA">
     <br>
-    <input type="radio" name="bit_order" value="lsb" checked> LSB
-    <input type="radio" name="bit_order" value="msb"> MSB&nbsp;&nbsp;
+    <input type="radio" name="bit_order" value="lsb" > LSB
+    <input type="radio" name="bit_order" value="msb" checked> MSB&nbsp;&nbsp;
     <input type="radio" name="parity" value="even" checked> Even Parity
     <input type="radio" name="parity" value="odd"> Odd Parity
     <input type="radio" name="parity" value="none"> No Parity
@@ -350,7 +352,7 @@ function init() {
     <br>
     <input type="checkbox" id="counter_clockwise">Counter Clockwise
     <input type="checkbox" id="bounding_circle" checked="true">Bounding Circle
-    <input type="checkbox" id="colour">Colour
+    <input type="checkbox" id="colour" checked="true">Colour
     <input type="checkbox" id="unroll">Unroll
     <br><br>
     <input type="submit" id="submit" name="draw" onClick="this.blur();">
