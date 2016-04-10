@@ -172,6 +172,7 @@ function render_a_byte(the_byte, ring, ring_width, sectors_in_ring, bytes_per_se
 
 function sectors_in_a_ring(ring, order, exponential) {
     if(order == 0) return 1;
+    if(ring == 0) return 1;
     return exponential ? Math.pow(order, ring) : (order * ring);
 }
 
