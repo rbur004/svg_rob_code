@@ -28,6 +28,10 @@ Bytes are drawn in concentric rings,  either increasing each ring linearly, or e
   The number of bytes that can be presented in r rings is ((1-Math.pow(base,r))/(1-base))*base
   To find the ring r, from a byte's index i: Math.floor( Math.log( (1 - (i-1)/base*(1-base) )) / Math.log(base) ) + 1
 ```
+###Sectors, instead of bytes
+The rob_code.html version replaces the byte calculations, with sector calculations, then allows multiple bytes in one sector. When the
+bytes per sector = 1, then the svg_arg.html and the rob_code.html versions give the same result.
+
 ##Reducing White Space
 XOR and other encodings have been used to improved to visual appearance, by reducing large areas of white space, especially when there are partially filled rings. This further complicates decoding, unless the XOR byte(s), or other encoding is known. 
 
