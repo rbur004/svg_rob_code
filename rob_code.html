@@ -6,7 +6,7 @@ var xor = true;
 var ring_width = 10;
 var ring_increment = 4;
 var bytes_per_sector = 1;
-var colour_array = [];
+var colour_array;
 var xor_value = 0xAA;
 var bounding_circle = true;
 var unrolled = false;
@@ -15,6 +15,20 @@ var counter_clockwise = false;
 var bit_order = 'lsb';
 var which_parity = 'even';
 var bits_per_byte = 9;
+var base_colour_array =  ["#FF0000", "#FFB300", "#FFFF00", "#00FF00", "#00FFFF", "#0000FF", "#7700D8", "#FF00FF", "black", "black"] ; 
+var black_array = ["black", "black", "black", "black", "black", "black", "black", "black", "black", "black"];
+
+function set_table_colour() {
+  for(var i=0; i<9; i += 1) {
+    document.getElementById("table1_cell_colour_" + i).value = base_colour_array[i];
+  }
+}
+
+function set_colour(colour_id) {
+  var index = parseInt(colour_id.id.slice(-1));
+  colour_array[index] = colour_id.value;
+  return true;
+}
 
 function polarToCartesianCoordinates(centerX, centerY, radius, angleInDegrees) {
   var angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
@@ -270,8 +284,7 @@ function encode_text(the_form) {
   center_x = parseInt(the_form.center_x.value);
   center_y = parseInt(the_form.center_y.value);
   xor_value = the_form.xor.checked ? parseInt_local(the_form.xor_text.value) : 0;
-  colour_array =  the_form.colour.checked ? ["red", "orange", "green", "lime", "aqua", "blue", "Fuchsia", "purple", "black", "black"] : 
-                                            ["black", "black", "black", "black", "black", "black", "black", "black", "black", "black"]; 
+  colour_array =  the_form.colour.checked ? base_colour_array : black_array; 
   unrolled = the_form.unroll.checked
   bounding_circle = the_form.bounding_circle.checked && !unrolled;
   if(!unrolled) {
@@ -286,6 +299,7 @@ function encode_text(the_form) {
 
 function init() {
   var the_form = document.getElementById("the_form");
+  set_table_colour();
   encode_text(the_form);
 }
 </script>
@@ -356,6 +370,19 @@ PUCK
     <input type="checkbox" id="colour" checked="true">Colour
     <input type="checkbox" id="unroll">Unroll
     <br><br>
+    <table><tr>
+    <td><input type="color" id="table1_cell_colour_0" value="#ff0000" onchange="set_colour(this);"></td>
+    <td><input type="color" id="table1_cell_colour_1" value="#ff0000" onchange="set_colour(this);"></td>
+    <td><input type="color" id="table1_cell_colour_2" value="#ff0000" onchange="set_colour(this);"></td>
+    <td><input type="color" id="table1_cell_colour_3" value="#ff0000" onchange="set_colour(this);"></td>
+    <td><input type="color" id="table1_cell_colour_4" value="#ff0000" onchange="set_colour(this);"></td>
+    <td><input type="color" id="table1_cell_colour_5" value="#ff0000" onchange="set_colour(this);"></td>
+    <td><input type="color" id="table1_cell_colour_6" value="#ff0000" onchange="set_colour(this);"></td>
+    <td><input type="color" id="table1_cell_colour_7" value="#ff0000" onchange="set_colour(this);"></td>
+    <td><input type="color" id="table1_cell_colour_8" value="#ff0000" onchange="set_colour(this);"></td>
+    </tr>
+    </table>
+    <br>
     <input type="submit" id="submit" name="draw" onClick="this.blur();">
   </form>
   <div align="left">
