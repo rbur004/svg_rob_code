@@ -328,8 +328,8 @@ PUCK
   And Robin shall restore amends.
 </textarea>
 <br>
-    <input type="checkbox" id="exponential" >Exponential
-    <select name="step_size">
+    <input type="checkbox" id="exponential" onchange="encode_text(this.form);return false;">Exponential
+    <select name="step_size" onchange="encode_text(this.form);return false;">
       <option value="0">0</option>
       <option value="1">1</option>
       <option value="2" selected>2</option>
@@ -343,32 +343,32 @@ PUCK
     start at Ring <input type="text" size="5" name="start_ring" value="1">
     <br>
     <input type="text" width="16" name="xor_text" value="0xAA">
-    <input type="checkbox" id="xor" checked="true">XOR (0b for binary, 0a for a Character, 0x for Hex)
+    <input type="checkbox" id="xor" checked="true" onchange="encode_text(this.form);return false;">XOR (0b for binary, 0a for a Character, 0x for Hex)
     <br>
     Center X <input type="text" size="5" name="center_x" value="250">
     Y <input type="text" size="5" name="center_y" value="250">
     Ring Width<input type="text" size="3" name="ring_width" value="20">
     Bytes per Sector<input type="text" size="5" name="bytes_per_sector" value="1">
     <br>
-    <input type="radio" name="center" value="no_center" checked> No Center
-    <input type="radio" name="center" value="center_circle" > Solid
-    <input type="radio" name="center" value="ring" > Ring
-    <input type="radio" name="center" value="double_circle" > Circle with Ring
-    <input type="radio" name="center" value="center_byte"> Center Byte
+    <input type="radio" name="center" value="no_center" checked onchange="encode_text(this.form);return false;"> No Center
+    <input type="radio" name="center" value="center_circle" onchange="encode_text(this.form);return false;"> Solid
+    <input type="radio" name="center" value="ring" onchange="encode_text(this.form);return false;"> Ring
+    <input type="radio" name="center" value="double_circle" onchange="encode_text(this.form);return false;"> Circle with Ring
+    <input type="radio" name="center" value="center_byte" onchange="encode_text(this.form);return false;"> Center Byte
     <input type="text" size="12" name="center_byte_text" value="0xAA">
     <br>
-    <input type="radio" name="bit_order" value="lsb" > LSB
-    <input type="radio" name="bit_order" value="msb" checked> MSB&nbsp;&nbsp;
-    <input type="radio" name="parity" value="even" checked> Even Parity
-    <input type="radio" name="parity" value="odd"> Odd Parity
-    <input type="radio" name="parity" value="none"> No Parity
-    <input type="radio" name="parity" value="mark"> Mark
-    <input type="radio" name="parity" value="space"> Space
+    <input type="radio" name="bit_order" value="lsb" onchange="encode_text(this.form);return false;"> LSB
+    <input type="radio" name="bit_order" value="msb" checked onchange="encode_text(this.form);return false;"> MSB&nbsp;&nbsp;
+    <input type="radio" name="parity" value="even" checked onchange="encode_text(this.form);return false;"> Even Parity
+    <input type="radio" name="parity" value="odd" onchange="encode_text(this.form);return false;"> Odd Parity
+    <input type="radio" name="parity" value="none" onchange="encode_text(this.form);return false;"> No Parity
+    <input type="radio" name="parity" value="mark" onchange="encode_text(this.form);return false;"> Mark
+    <input type="radio" name="parity" value="space" onchange="encode_text(this.form);return false;"> Space
     <br>
-    <input type="checkbox" id="counter_clockwise">Counter Clockwise
-    <input type="checkbox" id="bounding_circle" checked="true">Bounding Circle
-    <input type="checkbox" id="colour" checked="true">Colour
-    <input type="checkbox" id="unroll">Unroll
+    <input type="checkbox" id="counter_clockwise" onchange="encode_text(this.form);return false;">Counter Clockwise
+    <input type="checkbox" id="bounding_circle" checked="true" onchange="encode_text(this.form);return false;">Bounding Circle
+    <input type="checkbox" id="colour" checked="true" onchange="encode_text(this.form);return false;">Colour
+    <input type="checkbox" id="unroll" onchange="encode_text(this.form);return false;">Unroll
     <br><br>
     <table><tr>
     <td><input type="color" id="table1_cell_colour_0" value="#ff0000" onchange="set_colour(this);"></td>
@@ -383,7 +383,7 @@ PUCK
     </tr>
     </table>
     <br>
-    <input type="submit" id="submit" name="draw" onClick="this.blur();">
+    <input type="submit" id="draw" name="draw" onClick="this.blur();">
   </form>
   <div align="left">
     <svg id="thesvg" width="100%" height="100%" >
