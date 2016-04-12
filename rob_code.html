@@ -123,8 +123,8 @@ function encode_string_to_bits(the_string) {
 
 function first_sector_for_ring(ring, ring_increment, exponential) { //base = rp.ring_increment for log
   if(ring <= 0) return 0;
-  if(ring_increment == 0) { return ring; }
-  ring -= 1; //As we need to calculate the capacity upto this ring.
+  if(ring_increment == 0)  return ring; 
+  ring -= 1; //As we need to calculate the capacity up to this ring.
   if(exponential) {
     return ring_increment == 1 ? ring : ((1-Math.pow(ring_increment,ring))/(1-ring_increment))*ring_increment + 1; 
   }
@@ -190,7 +190,7 @@ function sectors_in_a_ring(ring, rp) {
 function render_bytes(array_of_bytes, rp) {
   var byte_in_sector = 0;
   var sector_in_ring = 0;
-  var ring = rp.first_ring_offset;
+  var ring = rp.start_ring;
   var sectors_in_this_ring = sectors_in_a_ring(ring, rp);
   
   for(var i = 0; i < array_of_bytes.length; i++ ) { //each character
