@@ -11,6 +11,16 @@ function set_table_colour() {
   }
 }
 
+function reverse_colours() {
+  var tmp;
+  for(var i=0; i < 4; i += 1) {
+    tmp = base_colour_array[i];
+    base_colour_array[i] = base_colour_array[7 - i];
+    base_colour_array[7 - i] = tmp;
+  }
+  set_table_colour();
+}
+
 function set_colour(colour_id) {
   var index = parseInt(colour_id.id.slice(-1));
   colour_array[index] = colour_id.value;
@@ -400,8 +410,9 @@ PUCK
     <td><input type="color" id="table1_cell_colour_6" value="#ff0000" onchange="set_colour(this);"></td>
     <td><input type="color" id="table1_cell_colour_7" value="#ff0000" onchange="set_colour(this);"></td>
     <td><input type="color" id="table1_cell_colour_8" value="#ff0000" onchange="set_colour(this);"></td>
+    <td><input type="button" value="reverse" onClick="reverse_colours();this.blur();encode_text(this.form);return false;"></td>
     </tr>
-    </table>
+    </table> 
     <br>
     <input type="submit" id="draw" name="draw" onClick="this.blur();">
   </form>
