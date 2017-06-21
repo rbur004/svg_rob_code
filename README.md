@@ -6,7 +6,7 @@ The RoBCodes are computer generated art. There is no known decoder. There is no 
 Want to play: http://www.burrowes.org/svg_arc.html 
 or http://www.burrowes.org/rob_code.html
 
-##History
+## History
 Reimplements the earlier Python code, that produced a postscript file as output (ca the summer of 2013/14), and based on the target_library.ps and cardTemplate.ps from Diego Lopez de Iping TripCode generator (Diego's code was in turn, based on Jeremy Henty's code). 
 
 The Python code, was in turn, a reimplementation of the C version, ca 1985, which leveraged even earlier code for drawing bytes (8 bit, plus 1 parity bit) on concentric circles, to help students visualise how data is stored on disks (B&W Quickdraw on Lisa and 128M Macs). Many of the disk visualisations where visually attractive, reminiscent of scifi art, and so was born the first RoBCode generator (Yes, a pun. We had lots of Robs in Computer Science at that time). 
